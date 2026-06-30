@@ -4,7 +4,7 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = "LKV_MEDIA_PRODUCTION_KEY_2026"
 
-# Giao diện HTML được gộp thẳng vào code Python
+# ================= GIAO DIỆN CHÍNH (INDEX) =================
 HTML_LAYOUT = '''
 <!DOCTYPE html>
 <html lang="vi">
@@ -14,28 +14,29 @@ HTML_LAYOUT = '''
     <title>LKV MEDIA - Hệ Thống Trao Đổi Sub</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #1a1c29; color: #ffffff; display: flex; justify-content: center; padding: 20px; }
-        .container { background-color: #23273a; width: 100%; max-width: 450px; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
+        body { background-color: #0f111a; color: #ffffff; display: flex; justify-content: center; padding: 20px; }
+        .container { background: linear-gradient(145deg, #181a26, #23273a); width: 100%; max-width: 450px; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); border: 1px solid #2f344d; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #3b4160; padding-bottom: 15px; }
-        .coin-badge { background-color: #eab308; color: #000; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: bold; }
-        .btn-logout { font-size: 12px; color: #f87171; text-decoration: none; margin-top: 4px; display: inline-block; }
-        h3 { margin-bottom: 12px; font-size: 16px; color: #94a3b8; text-transform: uppercase; }
-        .section { background-color: #2f344d; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-        .job-item { background-color: #1a1c29; border: 1px solid #3b4160; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .job-info p { font-size: 14px; font-weight: 500; }
-        .job-info span { font-size: 12px; color: #eab308; }
-        .btn-job { background-color: #3b82f6; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        label { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 4px; }
-        input, select { width: 100%; padding: 10px; background-color: #1a1c29; border: 1px solid #3b4160; border-radius: 6px; color: white; font-size: 14px; margin-bottom: 12px; outline: none; }
-        .btn-buy { background-color: #10b981; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .coin-badge { background: linear-gradient(90deg, #eab308, #ca8a04); color: #000; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(234,179,8,0.2); }
+        .btn-logout { font-size: 13px; color: #f87171; text-decoration: none; margin-top: 6px; display: inline-block; font-weight: 500; }
+        h3 { margin-bottom: 12px; font-size: 15px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .section { background-color: #1e2235; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #2f344d; }
+        .job-item { background-color: #131622; border: 1px solid #2f344d; border-radius: 8px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .job-info p { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+        .job-info span { font-size: 12px; color: #eab308; font-weight: 500; }
+        .btn-job { background: linear-gradient(90deg, #3b82f6, #2563eb); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+        label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+        input, select { width: 100%; padding: 12px; background-color: #131622; border: 1px solid #2f344d; border-radius: 8px; color: white; font-size: 14px; margin-bottom: 14px; outline: none; transition: 0.3s; }
+        input:focus, select:focus { border-color: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.2); }
+        .btn-buy { background: linear-gradient(90deg, #10b981, #059669); color: white; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div>
-                <p style="font-size: 14px; color: #94a3b8;">Thành viên,</p>
-                <h2 style="font-size: 18px;">{{ username }}</h2>
+                <p style="font-size: 13px; color: #94a3b8;">Thành viên,</p>
+                <h2 style="font-size: 20px; color: #f1f5f9;">{{ username }}</h2>
                 <a href="/logout" class="btn-logout">Đăng xuất</a>
             </div>
             <div class="coin-badge">Xu: <span id="coinDisplay">{{ coin_formatted }}</span></div>
@@ -54,7 +55,7 @@ HTML_LAYOUT = '''
                 </div>
                 {% endfor %}
             {% else %}
-                <p style="text-align: center; font-size: 14px; color: #94a3b8;">Hệ thống đang đợi cập nhật nhiệm vụ mới!</p>
+                <p style="text-align: center; font-size: 14px; color: #94a3b8; padding: 10px 0;">Hệ thống đang đợi cập nhật nhiệm vụ mới!</p>
             {% endif %}
         </div>
 
@@ -79,7 +80,7 @@ HTML_LAYOUT = '''
     <script>
         function doJob(jobId, link) {
             window.open(link, '_blank');
-            alert("Đang chuyển hướng sang TikTok. Bấm nút Follow/Like xong hãy quay lại trang này bấm OK để nhận xu!");
+            alert("Đang chuyển hướng sang TikTok. Hãy bấm nút Follow/Like xong quay lại trang này bấm OK để nhận xu!");
             
             fetch('/api/complete-job', {
                 method: 'POST',
@@ -126,6 +127,100 @@ HTML_LAYOUT = '''
 </html>
 '''
 
+# ================= GIAO DIỆN ĐĂNG NHẬP / ĐĂNG KÝ MỚI XỊN HƠN =================
+AUTH_LAYOUT = '''
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKV MEDIA - Auth</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0c0e17; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; padding: 15px; }
+        .auth-card { background: #161925; padding: 35px 25px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid #23283c; position: relative; }
+        .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10b981, #3b82f6); border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        h2 { margin-bottom: 24px; text-align: center; font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+        .title-login { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        .title-register { color: #10b981; text-shadow: 0 0 10px rgba(16,185,129,0.2); }
+        input { width: 100%; padding: 12px; margin-bottom: 16px; background: #0c0e17; border: 1px solid #2a314a; color: white; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #3b82f6; box-shadow: 0 0 8px rgba(59,130,246,0.3); }
+        button { width: 100%; padding: 13px; background: linear-gradient(90deg, #10b981, #059669); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 12px rgba(16,185,129,0.2); margin-bottom: 10px; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .switch-mode { font-size: 13px; text-align: center; margin-top: 15px; color: #64748b; }
+        .switch-mode a { color: #10b981; text-decoration: none; font-weight: 600; }
+        /* Khu vực hiện chữ báo lỗi nhỏ dưới nút bấm */
+        #msgBox { text-align: center; font-size: 13px; font-weight: 500; margin-top: 10px; min-height: 20px; transition: 0.3s; }
+        .msg-error { color: #f87171; }
+        .msg-success { color: #34d399; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        {% if mode == 'login' %}
+            <h2 class="title-login">LKV MEDIA LOGIN</h2>
+            <form id="authForm">
+                <input type="text" id="username" placeholder="Tên tài khoản" required>
+                <input type="password" id="password" placeholder="Mật khẩu" required>
+                <button type="submit">Đăng Nhập</button>
+            </form>
+            <div id="msgBox"></div>
+            <p class="switch-mode">Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></p>
+        {% else %}
+            <h2 class="title-register">ĐĂNG KÝ HỆ THỐNG</h2>
+            <form id="authForm">
+                <input type="text" id="username" placeholder="Tên tài khoản mới" required>
+                <input type="password" id="password" placeholder="Mật khẩu" required>
+                <button type="submit" style="background: linear-gradient(90deg, #3b82f6, #1d4ed8); box-shadow: 0 4px 12px rgba(59,130,246,0.2);">Tạo Tài Khoản</button>
+            </form>
+            <div id="msgBox"></div>
+            <p class="switch-mode">Đã có tài khoản? <a href="/login" style="color:#3b82f6;">Đăng nhập</a></p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const msgBox = document.getElementById('msgBox');
+            
+            msgBox.innerHTML = "Đang xử lý...";
+            msgBox.className = "";
+
+            const targetUrl = "{{ 'api/login' if mode == 'login' else 'api/register' }}";
+
+            fetch('/' + targetUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    msgBox.innerHTML = data.message;
+                    msgBox.className = "msg-success";
+                    if ("{{ mode }}" === "login") {
+                        setTimeout(() => { window.location.href = "/"; }, 800);
+                    } else {
+                        setTimeout(() => { window.location.href = "/login"; }, 1200);
+                    }
+                } else {
+                    msgBox.innerHTML = data.message;
+                    msgBox.className = "msg-error";
+                }
+            })
+            .catch(() => {
+                msgBox.innerHTML = "Lỗi kết nối máy chủ!";
+                msgBox.className = "msg-error";
+            });
+        });
+    </script>
+</body>
+</html>
+'''
+
+# ================= CODE LOGIC BACKEND XỬ LÝ DỮ LIỆU =================
 def init_db():
     conn = sqlite3.connect('traodoisub_prod.db')
     cursor = conn.cursor()
@@ -169,66 +264,55 @@ def index():
     
     return render_template_string(HTML_LAYOUT, username=session['username'], coin_formatted=coin_formatted, jobs=jobs)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login')
 def login_page():
-    if request.method == 'POST':
-        username = request.form.get('username').strip()
-        password = request.form.get('password').strip()
+    if 'username' in session: return redirect(url_for('index'))
+    return render_template_string(AUTH_LAYOUT, mode='login')
+
+@app.route('/register')
+def register_page():
+    if 'username' in session: return redirect(url_for('index'))
+    return render_template_string(AUTH_LAYOUT, mode='register')
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.json or {}
+    username = data.get('username', '').strip()
+    password = data.get('password', '').strip()
+    
+    if not username or not password:
+        return jsonify({"status": "error", "message": "Vui lòng điền đủ thông tin!"})
         
+    conn = sqlite3.connect('traodoisub_prod.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+    user = cursor.fetchone()
+    conn.close()
+    
+    if user:
+        session['username'] = username
+        return jsonify({"status": "success", "message": "Đăng nhập thành công! Đang chuyển hướng..."})
+    else:
+        return jsonify({"status": "error", "message": "Sai tài khoản hoặc mật khẩu!"})
+
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    data = request.json or {}
+    username = data.get('username', '').strip()
+    password = data.get('password', '').strip()
+    
+    if not username or not password:
+        return jsonify({"status": "error", "message": "Không được để trống thông tin!"})
+        
+    try:
         conn = sqlite3.connect('traodoisub_prod.db')
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-        user = cursor.fetchone()
+        cursor.execute("INSERT INTO users (username, password, coin) VALUES (?, ?, 2000)", (username, password))
+        conn.commit()
         conn.close()
-        
-        if user:
-            session['username'] = username
-            return redirect(url_for('index'))
-        else:
-            return "Sai tài khoản hoặc mật khẩu! <a href='/login'>Thử lại</a>"
-            
-    return '''
-        <body style="background:#1a1c29;color:white;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;">
-            <form method="post" style="background:#23273a;padding:30px;border-radius:15px;width:300px;">
-                <h2 style="margin-bottom:20px;text-align:center;">LKV MEDIA LOGIN</h2>
-                <input type="text" name="username" placeholder="Tên tài khoản" style="width:100%;padding:10px;margin-bottom:15px;background:#1a1c29;border:1px solid #3b4160;color:white;border-radius:5px;" required><br>
-                <input type="password" name="password" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:20px;background:#1a1c29;border:1px solid #3b4160;color:white;border-radius:5px;" required><br>
-                <button type="submit" style="width:100%;padding:12px;background:#10b981;color:white;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Đăng Nhập</button>
-                <p style="font-size:13px;text-align:center;margin-top:15px;color:#94a3b8;">Chưa có tài khoản? <a href="/register" style="color:#10b981;">Đăng ký ngay</a></p>
-            </form>
-        </body>
-    '''
-
-@app.route('/register', methods=['GET', 'POST'])
-def register_page():
-    if request.method == 'POST':
-        username = request.form.get('username').strip()
-        password = request.form.get('password').strip()
-        
-        if not username or not password:
-            return "Không được để trống thông tin!"
-            
-        try:
-            conn = sqlite3.connect('traodoisub_prod.db')
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO users (username, password, coin) VALUES (?, ?, 2000)", (username, password))
-            conn.commit()
-            conn.close()
-            return "Đăng ký thành công! <a href='/login'>Đăng nhập ngay</a>"
-        except sqlite3.IntegrityError:
-            return "Tài khoản này đã tồn tại! <a href='/register'>Thử lại</a>"
-            
-    return '''
-        <body style="background:#1a1c29;color:white;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;">
-            <form method="post" style="background:#23273a;padding:30px;border-radius:15px;width:300px;">
-                <h2 style="margin-bottom:20px;text-align:center;color:#10b981;">ĐĂNG KÝ HỆ THỐNG</h2>
-                <input type="text" name="username" placeholder="Tên tài khoản mới" style="width:100%;padding:10px;margin-bottom:15px;background:#1a1c29;border:1px solid #3b4160;color:white;border-radius:5px;" required><br>
-                <input type="password" name="password" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:20px;background:#1a1c29;border:1px solid #3b4160;color:white;border-radius:5px;" required><br>
-                <button type="submit" style="width:100%;padding:12px;background:#10b981;color:white;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Tạo Tài Khoản</button>
-                <p style="font-size:13px;text-align:center;margin-top:15px;color:#94a3b8;">Đã có tài khoản? <a href="/login" style="color:#10b981;">Đăng nhập</a></p>
-            </form>
-        </body>
-    '''
+        return jsonify({"status": "success", "message": "Đăng ký thành công! Đang chuyển sang đăng nhập..."})
+    except sqlite3.IntegrityError:
+        return jsonify({"status": "error", "message": "Tài khoản này đã tồn tại rồi!"})
 
 @app.route('/logout')
 def logout():
@@ -238,7 +322,7 @@ def logout():
 @app.route('/api/complete-job', methods=['POST'])
 def complete_job():
     if 'username' not in session: return jsonify({"status": "error", "message": "Chưa đăng nhập!"})
-    data = request.json
+    data = request.json or {}
     job_id = data.get('job_id')
     conn = sqlite3.connect('traodoisub_prod.db'); cursor = conn.cursor()
     cursor.execute("SELECT reward, remains FROM jobs WHERE id = ?", (job_id,))
@@ -256,7 +340,7 @@ def complete_job():
 @app.route('/api/create-job', methods=['POST'])
 def create_job():
     if 'username' not in session: return jsonify({"status": "error", "message": "Chưa đăng nhập!"})
-    data = request.json
+    data = request.json or {}
     link = data.get('link'); job_type = data.get('type'); quantity = int(data.get('quantity', 0))
     if not link or quantity <= 0: return jsonify({"status": "error", "message": "Thiếu dữ liệu!"})
     price_per_sub = 600 if job_type == "tiktok_follow" else 400
